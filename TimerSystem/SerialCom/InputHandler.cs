@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace TimerSystem.SerialCom
 {
@@ -50,14 +52,15 @@ namespace TimerSystem.SerialCom
         {
             if (IsOpen)
             {
-                Debug.WriteLine("============");
-                Debug.WriteLine("DsrHolding");
-                Debug.WriteLine(DsrHolding);
-                Debug.WriteLine("CtsHolding");
-                Debug.WriteLine(CtsHolding);
-                Debug.WriteLine("============");
-                SnapTime?.Invoke(this, new SerialTimerEventArgs {High = DsrHolding});
-                TimerToggle?.Invoke(this, new SerialTimerEventArgs {High = CtsHolding});
+                try
+                {
+                    SnapTime?.Invoke(this, new SerialTimerEventArgs {High = DsrHolding});
+                    TimerToggle?.Invoke(this, new SerialTimerEventArgs {High = CtsHolding});
+                }
+                catch(IOException ex)
+                {
+                    MessageBox.Show(ex.Message, ex.Source, MessageBoxButton.OK, MessageBoxImage.Error);
+                } 
             }
         }
     }
