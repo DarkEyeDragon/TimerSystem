@@ -10,12 +10,6 @@ using System.Windows;
 
 namespace TimerSystem.SerialCom
 {
-
-    public class SerialTimerEventArgs : EventArgs
-    {
-        public bool High { get; set; }
-    }
-
     class InputHandler : SerialPort
     {
 

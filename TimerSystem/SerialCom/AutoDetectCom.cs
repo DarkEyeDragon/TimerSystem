@@ -8,16 +8,10 @@ using System.Windows.Threading;
 
 namespace TimerSystem.SerialCom
 {
-    public class ComPortEventArgs : EventArgs
-    {
-        public ComPortList ComPortList { get; set; }
-    }
-
-
     class AutoDetectCom : DispatcherTimer
     {
-        public delegate void ComportChangeEventHandler(object sender, ComPortEventArgs args);
-        public event ComportChangeEventHandler ComPortChanged;
+        public delegate void ComPortChangeEventHandler(object sender, ComPortEventArgs args);
+        public event ComPortChangeEventHandler ComPortChanged;
 
         public ComPortList Comports { get; set; }
         
@@ -26,7 +20,7 @@ namespace TimerSystem.SerialCom
         {
             Comports = new ComPortList();
             Interval = interval;
-            Tick += new EventHandler(TimerTick);
+            Tick += TimerTick;
             Start();
         }
 
