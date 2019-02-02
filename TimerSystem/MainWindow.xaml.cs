@@ -28,7 +28,7 @@ namespace TimerSystem
         private Stopwatch _stopwatch;
         private DispatcherTimer _timer;
         private AutoDetectCom _autoDetectCom;
-        private SerialPort _serialPort;
+        private InputHandler _inputHandler;
 
         public MainWindow()
         {
@@ -40,8 +40,32 @@ namespace TimerSystem
             ButtonPause.IsEnabled = false;
             _autoDetectCom = new AutoDetectCom(new TimeSpan(5000));
             _autoDetectCom.ComPortChanged += ComPortChanged;
+            _inputHandler = new InputHandler("COM3");
+            _inputHandler.SnapTime += SnaptimeEvent;
+            _inputHandler.TimerToggle += TimerToggleEvent;
         }
 
+        private void SnaptimeEvent(object sender, SerialTimerEventArgs args)
+        {
+            if (args.High)
+            {
+                Application.Current.Dispatcher.Invoke(new Action(() =>
+                {
+                    throw new NotImplementedException();
+                }));
+            }
+        }
+
+        private void TimerToggleEvent(object sender, SerialTimerEventArgs args)
+        {
+            if (args.High)
+            {
+                Application.Current.Dispatcher.Invoke(new Action(() =>
+                {
+                    ToggleTimer();
+                }));
+            }
+        }
         private void ComPortChanged(object sender, ComPortEventArgs args)
         {
             ComboBoxComPort.Items.Clear();
@@ -62,11 +86,16 @@ namespace TimerSystem
 
         private void ButtonToggleState_Click(object sender, RoutedEventArgs e)
         {
+            ToggleTimer();
+        }
+
+        private void ToggleTimer()
+        {
             //Timer is running
             if (_timer.IsEnabled)
             {
                 ButtonPause.IsEnabled = false;
-                _stopwatch.Reset();
+                _stopwatch.Stop();
                 _timer.Stop();
                 ButtonToggleState.Content = "Start";
             }
@@ -79,25 +108,6 @@ namespace TimerSystem
                 _timer.Start();
                 ButtonToggleState.Content = "Stop";
 
-            }
-
-        }
-
-        private void ButtonPause_Click(object sender, RoutedEventArgs e)
-        {
-            //Timer is running
-            if (_timer.IsEnabled)
-            {
-                _stopwatch.Stop();
-                _timer.Stop();
-                ButtonPause.Content = "Resume";
-            }
-            //Timer is not running
-            else
-            {
-                _stopwatch.Start();
-                _timer.Start();
-                ButtonPause.Content = "Pause";
             }
         }
     }
