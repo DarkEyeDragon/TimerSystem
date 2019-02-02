@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -37,22 +38,15 @@ namespace TimerSystem
             _timer = new DispatcherTimer(DispatcherPriority.Normal);
             _timer.Interval = new TimeSpan(50000);
             _timer.Tick += new EventHandler(Tick);
-            ButtonPause.IsEnabled = false;
             _autoDetectCom = new AutoDetectCom(new TimeSpan(5000));
             _autoDetectCom.ComPortChanged += ComPortChanged;
-            _inputHandler = new InputHandler("COM3");
-            _inputHandler.SnapTime += SnaptimeEvent;
-            _inputHandler.TimerToggle += TimerToggleEvent;
         }
 
         private void SnaptimeEvent(object sender, SerialTimerEventArgs args)
         {
             if (args.High)
             {
-                Application.Current.Dispatcher.Invoke(new Action(() =>
-                {
-                    throw new NotImplementedException();
-                }));
+                Application.Current.Dispatcher.Invoke(() => { throw new NotImplementedException(); });
             }
         }
 
@@ -60,12 +54,10 @@ namespace TimerSystem
         {
             if (args.High)
             {
-                Application.Current.Dispatcher.Invoke(new Action(() =>
-                {
-                    ToggleTimer();
-                }));
+                Application.Current.Dispatcher.Invoke(ToggleTimer);
             }
         }
+
         private void ComPortChanged(object sender, ComPortEventArgs args)
         {
             ComboBoxComPort.Items.Clear();
@@ -73,8 +65,20 @@ namespace TimerSystem
             {
                 ComboBoxComPort.Items.Add(item);
             }
-            ComboBoxComPort.SelectedItem = ComboBoxComPort.Items[0];
 
+            if (ComboBoxComPort.Items.Count == 0) return;
+            ComboBoxComPort.SelectedItem = ComboBoxComPort.Items[0];
+            _inputHandler = new InputHandler(ComboBoxComPort.Text);
+            _inputHandler.SnapTime += SnaptimeEvent;
+            _inputHandler.TimerToggle += TimerToggleEvent;
+            try
+            {
+                _inputHandler.Open();
+            }
+            catch (IOException e)
+            {
+                MessageBox.Show(e.Message, e.Source, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Tick(object sender, EventArgs e)
@@ -94,7 +98,6 @@ namespace TimerSystem
             //Timer is running
             if (_timer.IsEnabled)
             {
-                ButtonPause.IsEnabled = false;
                 _stopwatch.Stop();
                 _timer.Stop();
                 ButtonToggleState.Content = "Start";
@@ -102,12 +105,9 @@ namespace TimerSystem
             //Timer is not running
             else
             {
-                ButtonPause.IsEnabled = true;
-                ButtonPause.Content = "Pause";
                 _stopwatch.Start();
                 _timer.Start();
                 ButtonToggleState.Content = "Stop";
-
             }
         }
     }

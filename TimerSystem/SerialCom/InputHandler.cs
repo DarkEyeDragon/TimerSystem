@@ -22,6 +22,7 @@ namespace TimerSystem.SerialCom
         public event SnapTimeEventHandler SnapTime;
         public event ToggleTimerEventHandler TimerToggle;
 
+
         public InputHandler(string portName) : base(portName)
         {
             BaudRate = 9600;
@@ -33,7 +34,6 @@ namespace TimerSystem.SerialCom
             ErrorReceived += ErrorReceivedEvent;
             DtrEnable = true;
             RtsEnable = true;
-            Open();
         }
 
         private void ErrorReceivedEvent(object sender, SerialErrorReceivedEventArgs e)
@@ -48,14 +48,17 @@ namespace TimerSystem.SerialCom
 
         protected virtual void PinChangedEvent(object sender, SerialPinChangedEventArgs e)
         {
-            Debug.WriteLine("============");
-            Debug.WriteLine("DsrHolding");
-            Debug.WriteLine(DsrHolding);
-            Debug.WriteLine("CtsHolding");
-            Debug.WriteLine(CtsHolding);
-            Debug.WriteLine("============");
-            SnapTime?.Invoke(this, new SerialTimerEventArgs { High = DsrHolding });
-            TimerToggle?.Invoke(this, new SerialTimerEventArgs { High = CtsHolding });
+            if (IsOpen)
+            {
+                Debug.WriteLine("============");
+                Debug.WriteLine("DsrHolding");
+                Debug.WriteLine(DsrHolding);
+                Debug.WriteLine("CtsHolding");
+                Debug.WriteLine(CtsHolding);
+                Debug.WriteLine("============");
+                SnapTime?.Invoke(this, new SerialTimerEventArgs {High = DsrHolding});
+                TimerToggle?.Invoke(this, new SerialTimerEventArgs {High = CtsHolding});
+            }
         }
     }
 }
