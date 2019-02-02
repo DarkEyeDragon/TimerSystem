@@ -59,7 +59,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Excel\Excel.cs" />
+    <Compile Include="ExcelHandler\Excel.cs" />
     <Compile Include="SerialCom\AutoDetectCom.cs" />
     <Compile Include="SerialCom\ComPortEventArgs.cs" />
     <Compile Include="SerialCom\ComPortList.cs" />

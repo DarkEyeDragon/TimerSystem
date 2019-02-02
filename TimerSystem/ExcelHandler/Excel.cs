@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using Microsoft.Office.Interop.Excel;
 using _Excel = Microsoft.Office.Interop.Excel;
 
-namespace TimerSystem.Excel
+namespace TimerSystem.ExcelHandler
 {
     class Excel
     {
         public string Path { get; set; }
         private readonly _Application _excel = new Application();
-        private Workbook workBook;
+        private readonly Workbook workBook;
         private readonly Worksheet _workSheet;
 
         public Excel(string path, int sheet)

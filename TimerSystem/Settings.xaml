@@ -5,16 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TimerSystem"
         mc:Ignorable="d"
-        Title="Settings" Height="450" Width="800">
+        Title="Settings" Height="450" Width="800"
+        Closing="Settings_OnClosing"
+        >
     <Grid>
         <TextBox HorizontalAlignment="Left" Height="26" Margin="146,123,0,0" TextWrapping="WrapWithOverflow" Text="A1" VerticalAlignment="Top" Width="50"/>
         <Label Content="Starting cell" HorizontalAlignment="Left" Margin="69,123,0,0" VerticalAlignment="Top"/>
         <TextBox Name="TextBoxEndingCell" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="26" Margin="146,154,0,0" TextWrapping="WrapWithOverflow" Text="A2" VerticalAlignment="Top" Width="50"/>
         <Label Content="Ending cell" HorizontalAlignment="Left" Margin="69,154,0,0" VerticalAlignment="Top" Width="72"/>
-        <Button VerticalContentAlignment="Center" Content="Set" HorizontalAlignment="Left" Margin="69,185,0,0" VerticalAlignment="Top" Width="127"/>
+        <Button VerticalContentAlignment="Center" Content="Set" HorizontalAlignment="Left" Margin="69,230,0,0" VerticalAlignment="Top" Width="127"/>
         <TextBox Name="TextBoxStartingCell" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="26" Margin="146,123,0,0" TextWrapping="WrapWithOverflow" Text="A1" VerticalAlignment="Top" Width="50"/>
         <Label Content="Page" HorizontalAlignment="Left" Margin="69,92,0,0" VerticalAlignment="Top"/>
         <TextBox Name="TextBoxPage" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="26" Margin="146,92,0,0" TextWrapping="WrapWithOverflow" Text="1" VerticalAlignment="Top" Width="50"/>
+        <TextBox Name="TextBoxPath" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="26" Margin="146,185,0,0" TextWrapping="WrapWithOverflow" Text="" VerticalAlignment="Top" Width="427"/>
+        <Label Content="Path" HorizontalAlignment="Left" Margin="69,185,0,0" VerticalAlignment="Top" Width="72"/>
+        <Button Name="ButtonBrowse" VerticalContentAlignment="Center" Content="Browse..." HorizontalAlignment="Left" Margin="578,185,0,0" VerticalAlignment="Top" Width="65" Height="26" Click="ButtonBrowse_Click"/>
 
     </Grid>
 </Window>

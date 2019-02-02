@@ -1,43 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Ports;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
+using TimerSystem.ExcelHandler;
 using TimerSystem.SerialCom;
 
 namespace TimerSystem
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    ///     Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Stopwatch _stopwatch;
-        private DispatcherTimer _timer;
-        private AutoDetectCom _autoDetectCom;
+        private readonly AutoDetectCom _autoDetectCom;
+
+        private readonly Settings _settingsWindow;
+        private readonly Stopwatch _stopwatch;
+        private readonly DispatcherTimer _timer;
+        private Excel _excel;
         private InputHandler _inputHandler;
 
         public MainWindow()
         {
             InitializeComponent();
+            _settingsWindow = new Settings();
+            _settingsWindow.InitializeComponent();
             _stopwatch = new Stopwatch();
             _timer = new DispatcherTimer(DispatcherPriority.Normal);
             _timer.Interval = new TimeSpan(50000);
-            _timer.Tick += new EventHandler(Tick);
+            _timer.Tick += Tick;
             _autoDetectCom = new AutoDetectCom(new TimeSpan(5000));
             _autoDetectCom.ComPortChanged += ComPortChanged;
         }
@@ -45,26 +37,21 @@ namespace TimerSystem
         private void SnaptimeEvent(object sender, SerialTimerEventArgs args)
         {
             if (args.High)
-            {
-                Application.Current.Dispatcher.Invoke(() => { throw new NotImplementedException(); });
-            }
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    if (_excel == null) _excel = new Excel(_settingsWindow.TextBoxPath.Text, 1);
+                });
         }
 
         private void TimerToggleEvent(object sender, SerialTimerEventArgs args)
         {
-            if (args.High)
-            {
-                Application.Current.Dispatcher.Invoke(ToggleTimer);
-            }
+            if (args.High) Application.Current.Dispatcher.Invoke(ToggleTimer);
         }
 
         private void ComPortChanged(object sender, ComPortEventArgs args)
         {
             ComboBoxComPort.Items.Clear();
-            foreach (var item in args.ComPortList.List)
-            {
-                ComboBoxComPort.Items.Add(item);
-            }
+            foreach (var item in args.ComPortList.List) ComboBoxComPort.Items.Add(item);
 
             if (ComboBoxComPort.Items.Count == 0) return;
             ComboBoxComPort.SelectedItem = ComboBoxComPort.Items[0];
@@ -109,6 +96,11 @@ namespace TimerSystem
                 _timer.Start();
                 ButtonToggleState.Content = "Stop";
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            _settingsWindow.ShowDialog();
         }
     }
 }
