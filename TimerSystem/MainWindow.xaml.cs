@@ -17,9 +17,12 @@ namespace TimerSystem
 
         private readonly Settings _settingsWindow;
         private readonly Stopwatch _stopwatch;
+        private readonly Stopwatch _resetStopwatch;
         private readonly DispatcherTimer _timer;
         private Excel _excel;
         private InputHandler _inputHandler;
+        public int ResetThreshold { get; set; }
+        private TimeSpan _threshHoldTimeSpan;
 
         public MainWindow()
         {
@@ -27,11 +30,14 @@ namespace TimerSystem
             _settingsWindow = new Settings();
             _settingsWindow.InitializeComponent();
             _stopwatch = new Stopwatch();
-            _timer = new DispatcherTimer(DispatcherPriority.Normal);
-            _timer.Interval = new TimeSpan(50000);
+            _resetStopwatch = new Stopwatch();
+            _timer = new DispatcherTimer(DispatcherPriority.Normal) {Interval = new TimeSpan(50000)};
             _timer.Tick += Tick;
             _autoDetectCom = new AutoDetectCom(new TimeSpan(5000));
             _autoDetectCom.ComPortChanged += ComPortChanged;
+            //TODO make threshold configurable
+            ResetThreshold = 2;
+            _threshHoldTimeSpan = new TimeSpan(0, 0, ResetThreshold);
         }
 
         private void SnaptimeEvent(object sender, SerialTimerEventArgs args)
@@ -45,7 +51,26 @@ namespace TimerSystem
 
         private void TimerToggleEvent(object sender, SerialTimerEventArgs args)
         {
-            if (args.High) Application.Current.Dispatcher.Invoke(ToggleTimer);
+            if (args.High)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    _resetStopwatch.Start();
+                    ToggleTimer();
+                });
+            }
+            else
+            {
+                if (_resetStopwatch.Elapsed >= _threshHoldTimeSpan)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        _stopwatch.Reset();
+                        UpdateTimer();
+                    });
+                }
+                _resetStopwatch.Reset();
+            }
         }
 
         private void ComPortChanged(object sender, ComPortEventArgs args)
@@ -58,6 +83,8 @@ namespace TimerSystem
             _inputHandler = new InputHandler(ComboBoxComPort.Text);
             _inputHandler.SnapTime += SnaptimeEvent;
             _inputHandler.TimerToggle += TimerToggleEvent;
+            _inputHandler.Debounce = true;
+            _inputHandler.DebounceThreshold = 1000;
             try
             {
                 _inputHandler.Open();
@@ -69,6 +96,11 @@ namespace TimerSystem
         }
 
         private void Tick(object sender, EventArgs e)
+        {
+            UpdateTimer();
+        }
+
+        private void UpdateTimer()
         {
             LabelTime.Content = _stopwatch.Elapsed.ToString(@"m\:ss\:fff");
             LabelTime.InvalidateVisual();

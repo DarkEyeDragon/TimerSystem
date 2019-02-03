@@ -63,6 +63,9 @@
     <Compile Include="SerialCom\AutoDetectCom.cs" />
     <Compile Include="SerialCom\ComPortEventArgs.cs" />
     <Compile Include="SerialCom\ComPortList.cs" />
+    <Compile Include="SerialCom\HardwareButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="SerialCom\InputHandler.cs">
       <SubType>Component</SubType>
     </Compile>
