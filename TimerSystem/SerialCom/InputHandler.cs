@@ -27,9 +27,6 @@ namespace TimerSystem.SerialCom
         /// </summary>
         public int DebounceThreshold { get; set; }
 
-        private TimeSpan _debounceTimespan;
-
-        private Stopwatch _debounceTimer;
         public InputHandler(string portName) : base(portName)
         {
             BaudRate = 9600;
@@ -41,8 +38,6 @@ namespace TimerSystem.SerialCom
             ErrorReceived += ErrorReceivedEvent;
             DtrEnable = true;
             RtsEnable = true;
-            _debounceTimer = new Stopwatch();
-            _debounceTimespan = new TimeSpan(0,0,0,0,DebounceThreshold);
         }
 
         private void ErrorReceivedEvent(object sender, SerialErrorReceivedEventArgs e)
@@ -63,7 +58,6 @@ namespace TimerSystem.SerialCom
                 {
                     SnapTime?.Invoke(this, new SerialTimerEventArgs { High = DsrHolding });
                     TimerToggle?.Invoke(this, new SerialTimerEventArgs { High = CtsHolding });
-                    _debounceTimer.Start();
                 }
                 catch (IOException ex)
                 {

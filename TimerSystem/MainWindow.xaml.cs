@@ -23,6 +23,7 @@ namespace TimerSystem
         private InputHandler _inputHandler;
         public int ResetThreshold { get; set; }
         private TimeSpan _threshHoldTimeSpan;
+        private bool _pressed;
 
         public MainWindow()
         {
@@ -53,11 +54,8 @@ namespace TimerSystem
         {
             if (args.High)
             {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    _resetStopwatch.Start();
-                    ToggleTimer();
-                });
+                _pressed = true;
+                _resetStopwatch.Start();
             }
             else
             {
@@ -65,9 +63,20 @@ namespace TimerSystem
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
+                        _stopwatch.Stop();
+                        _timer.Stop();
+                        ButtonToggleState.Content = "Start";
                         _stopwatch.Reset();
                         UpdateTimer();
                     });
+                }
+                else if(_pressed)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        ToggleTimer();
+                    });
+                    _pressed = false;
                 }
                 _resetStopwatch.Reset();
             }
