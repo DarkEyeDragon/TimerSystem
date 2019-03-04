@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -25,6 +26,8 @@ namespace TimerSystem
         private TimeSpan _threshHoldTimeSpan;
         private bool _pressed;
 
+        public ShutdownMode ShutdownMode { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -39,6 +42,8 @@ namespace TimerSystem
             //TODO make threshold configurable
             ResetThreshold = 2;
             _threshHoldTimeSpan = new TimeSpan(0, 0, ResetThreshold);
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
+            Application.Current.ShutdownMode = ShutdownMode;
         }
 
         private void SnaptimeEvent(object sender, SerialTimerEventArgs args)
@@ -72,10 +77,7 @@ namespace TimerSystem
                 }
                 else if(_pressed)
                 {
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        ToggleTimer();
-                    });
+                    Application.Current.Dispatcher.Invoke(ToggleTimer);
                     _pressed = false;
                 }
                 _resetStopwatch.Reset();
